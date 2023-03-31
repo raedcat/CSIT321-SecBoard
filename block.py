@@ -1,3 +1,7 @@
+import hashlib # sha256 shenanigans
+import json
+
+
 class standardBlock: # class to define the standard block, with properties taken from the correctable chain paper
     def __init__(self, previousHash, data, proofOfWork, correctionHash):
         self.previousHash = previousHash # hash of the previous block in the standard chain. The paper describes this as ss ∈ {0,1}^K, which just means it's binary (consists only of 0s and 1s)
@@ -12,6 +16,20 @@ class standardChain: # class defining the standard chain by creating a list of s
         self.chainList = [] # initiate the list
         self.chainList.append(genesis) # add to the list. append adds to the end of the list. To modify at a certain index, use 'insert(index, object)'
     
+    def __str__(self):
+        output = ""
+        count = 0
+        for x in self.chainList:
+            count +=1
+            output +="BLOCK {}\n\
+            Previous Hash: {}\n\
+            Data: {}\n\
+            Proof of Work: {}\n\
+            Correction Hash: {}\n\
+            ".format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
+            return output
+ # will likely be left as null until correction chain is implemented
+
     def addToChain(self, standardBlock): # add a block to the chain, assuming the block has already been made
         self.chainList.append(standardBlock)
 
@@ -30,14 +48,3 @@ class standardChain: # class defining the standard chain by creating a list of s
         hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
         print('Hash of previous block: ' + hashOfPrevious) #debugging shenanigans
         return
-
-    def printChain(self):
-        for x in range(len(self.chainList)):
-            print('BLOCK ' + str(x))
-            print('Previous Hash: ' + self.chainList[x].previousHash)
-            print('Data: ' + self.chainList[x].data)
-            print('Proof of Work: ' + self.chainList[x].proofOfWork)
-            print('Correction Hash: ' + self.chainList[x].correctionHash) # will likely be left as null until correction chain is implemented
-            print()
-
-

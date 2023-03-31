@@ -1,3 +1,6 @@
-{"BlockChain":[
-    {"Previous Hash":"Genesis", "Data":"Genesis", "Proof of Work": 0,"Correction Hash":"Genesis"}
+{"MainChain":[
+    {"Previous Hash":"Genesis", "Data":"", "Proof of Work": 0,"Correction Hash":""}
+],
+"CorrectionChain":[
+    
 ]}
