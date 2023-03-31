@@ -21,17 +21,18 @@ class standardChain: # class defining the standard chain by creating a list of s
         count = 0
         for x in self.chainList:
             count +=1
-            output +="BLOCK {}\n\
-            Previous Hash: {}\n\
-            Data: {}\n\
-            Proof of Work: {}\n\
-            Correction Hash: {}\n\
-            ".format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
+            output +="BLOCK {:>10}\n\
+Previous Hash: {:>10}\n\
+Data: {:>10}\n\
+Proof of Work: {:>10}\n\
+Correction Hash: {:>10}\n\
+".format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
             return output
- # will likely be left as null until correction chain is implemented
+# will likely be left as null until correction chain is implemented
 
     def addToChain(self, standardBlock): # add a block to the chain, assuming the block has already been made
         self.chainList.append(standardBlock)
+        
 
     def createStandardBlock(self, data): # create a block by hashing the previous block and finding the proof of work nonce value
         # hash previous block
