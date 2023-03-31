@@ -11,6 +11,12 @@
             "Data": "10",
             "Proof of Work": 5,
             "Correction Hash": "50"
+        },
+        {
+            "Previous Hash": "Gen",
+            "Data": "10",
+            "Proof of Work": 5,
+            "Correction Hash": "50"
         }
     ],
     "CorrectionChain": []
