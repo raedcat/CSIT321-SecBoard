@@ -10,5 +10,6 @@ if __name__ == "__main__": # apparently this is cool
     testChain = standardChain()
     print(testChain)
     testChain.createStandardBlock(testMessage)
+    writeMainDatabase("")
 ##################
 
