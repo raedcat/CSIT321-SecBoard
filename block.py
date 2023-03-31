@@ -12,21 +12,20 @@ class standardBlock: # class to define the standard block, with properties taken
 class standardChain: # class defining the standard chain by creating a list of standardBlock objects
 
     def __init__(self):
-        genesis = standardBlock("Genesis", "", "685", "") # generate a genesis block when the list (chain) is created
+        genesis = standardBlock("Genesis", "Test", "685", "") # generate a genesis block when the list (chain) is created
         self.chainList = [] # initiate the list
         self.chainList.append(genesis) # add to the list. append adds to the end of the list. To modify at a certain index, use 'insert(index, object)'
     
-    def __str__(self):
+    def __str__(self): # print method
         output = ""
         count = 0
         for x in self.chainList:
             count +=1
-            output +="BLOCK {:>10}\n\
-Previous Hash: {:>10}\n\
-Data: {:>10}\n\
-Proof of Work: {:>10}\n\
-Correction Hash: {:>10}\n\
-".format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
+            output +=("BLOCK {:>10}\n"
+                "Previous Hash: {:>10}\n"
+                "Data: {:>10}\n"
+                "Proof of Work: {:>10}\n"
+                "Correction Hash: {:>10}\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
             return output
 # will likely be left as null until correction chain is implemented
 
@@ -37,15 +36,19 @@ Correction Hash: {:>10}\n\
     def createStandardBlock(self, data): # create a block by hashing the previous block and finding the proof of work nonce value
         # hash previous block
         previousBlockIndex = len(self.chainList) - 1
+        # hash the data to be hashed with the block
+        hashedData = hashlib.sha256(self.chainList[previousBlockIndex].data.encode('utf-8')).hexdigest()
+        
         # In order to hash the block, must convert to json
         newBlock = json.dumps({
     
                 'Previous Hash ': self.chainList[previousBlockIndex].previousHash,
-                'Data': self.chainList[previousBlockIndex].data,
+                'Data': hashedData,
                 'Proof of Work': self.chainList[previousBlockIndex].proofOfWork,
                 'Correction Hash': self.chainList[previousBlockIndex].correctionHash
     
                 }, sort_keys=True, indent=4, separators=(',', ': '))
         hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+        print('Hashed data: ' + str(hashedData))
         print('Hash of previous block: ' + hashOfPrevious) #debugging shenanigans
         return
