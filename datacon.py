@@ -14,4 +14,4 @@ def writeMainDatabase(block):
 
 
 def writeCorrDatabase(block):
-    print("write corr database")
+    print("write correction chain database")
