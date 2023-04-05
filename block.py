@@ -12,7 +12,37 @@ class standardBlock: # class to define the standard block, with properties taken
 class standardChain: # class defining the standard chain by creating a list of standardBlock objects
 
     def __init__(self):
-        genesis = standardBlock("Genesis", "Test", "685", "") # generate a genesis block when the list (chain) is created
+        # first initialise nonce value finding
+        nonceValue = 0 # this nonce finding method needs to be cleaned up and put into its own function
+        newBlock = json.dumps({
+    
+                'Previous Hash': 'Genesis',
+                'Data': 'Test',
+                'Proof of Work': nonceValue,
+                'Correction Hash': 'TBI' # to be implemented
+    
+                }, sort_keys=True, indent=4, separators=(',', ': '))
+        hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+        
+        # find nonce value and generate block along with its hash
+        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+            nonceValue = nonceValue + 1
+            newBlock = json.dumps({
+    
+                'Previous Hash': 'Genesis',
+                'Data': 'Test',
+                'Proof of Work': nonceValue,
+                'Correction Hash': 'TBI'
+    
+            }, sort_keys=True, indent=4, separators=(',', ': '))
+            hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+            if nonceValue >= 1000000000: # one billion is the limit for nonce searching
+                break
+
+        print('Hash of Genesis: ' + str(hash1))
+        print('The above should start with four zeroes')
+        print()
+        genesis = standardBlock("Genesis", "Test", nonceValue, "TBI") # generate a genesis block when the list (chain) is created
         self.chainList = [] # initiate the list
         self.chainList.append(genesis) # add to the list. append adds to the end of the list. To modify at a certain index, use 'insert(index, object)'
     
@@ -21,11 +51,11 @@ class standardChain: # class defining the standard chain by creating a list of s
         count = 0
         for x in self.chainList:
             count +=1
-            output +=("BLOCK {:>10}\n"
+            output +=("BLOCK {:}\n"
                 "Previous Hash: {:>10}\n"
-                "Data: {:>10}\n"
-                "Proof of Work: {:>10}\n"
-                "Correction Hash: {:>10}\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
+                "Data: {:>16}\n"
+                "Proof of Work: {:>8}\n"
+                "Correction Hash: {:>4}\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
             return output
 # will likely be left as null until correction chain is implemented
 
@@ -40,15 +70,33 @@ class standardChain: # class defining the standard chain by creating a list of s
         hashedData = hashlib.sha256(self.chainList[previousBlockIndex].data.encode('utf-8')).hexdigest()
         
         # In order to hash the block, must convert to json
+        nonceValue = 0
         newBlock = json.dumps({
     
                 'Previous Hash ': self.chainList[previousBlockIndex].previousHash,
                 'Data': hashedData,
-                'Proof of Work': self.chainList[previousBlockIndex].proofOfWork,
+                'Proof of Work': nonceValue,
                 'Correction Hash': self.chainList[previousBlockIndex].correctionHash
     
                 }, sort_keys=True, indent=4, separators=(',', ': '))
         hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+
+        # find nonce value and generate block along with its hash
+        while not str(hashOfPrevious).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+            nonceValue = nonceValue + 1
+            newBlock = json.dumps({
+    
+                'Previous Hash ': self.chainList[previousBlockIndex].previousHash,
+                'Data': hashedData,
+                'Proof of Work': nonceValue,
+                'Correction Hash': self.chainList[previousBlockIndex].correctionHash
+    
+            }, sort_keys=True, indent=4, separators=(',', ': '))
+            hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+            if nonceValue >= 1000000000: # one billion is the limit for nonce searching
+                break
+            
         print('Hashed data: ' + str(hashedData))
         print('Hash of previous block: ' + hashOfPrevious) #debugging shenanigans
+        print('This looks different from the genesis hash as we have hashed the Data field')
         return
