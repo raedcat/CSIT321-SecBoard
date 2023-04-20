@@ -12,37 +12,12 @@ class standardBlock: # class to define the standard block, with properties taken
 class standardChain: # class defining the standard chain by creating a list of standardBlock objects
 
     def __init__(self):
-        # first initialise nonce value finding
-        nonceValue = 0 # this nonce finding method needs to be cleaned up and put into its own function
-        newBlock = json.dumps({
-    
-                'Previous Hash': 'Genesis',
-                'Data': 'Test',
-                'Proof of Work': nonceValue,
-                'Correction Hash': 'TBI' # to be implemented
-    
-                }, sort_keys=True, indent=4, separators=(',', ': '))
-        hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
-        
-        # find nonce value and generate block along with its hash
-        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
-            nonceValue = nonceValue + 1
-            newBlock = json.dumps({
-    
-                'Previous Hash': 'Genesis',
-                'Data': 'Test',
-                'Proof of Work': nonceValue,
-                'Correction Hash': 'TBI'
-    
-            }, sort_keys=True, indent=4, separators=(',', ': '))
-            hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
-            if nonceValue >= 1000000000: # one billion is the limit for nonce searching
-                break
+        hash1 = self.ProofOfWork('Genesis', 'Test', 'TBI')
 
-        print('Hash of Genesis: ' + str(hash1))
+        print('Hash of Genesis: ' + str(hash1[0])) # hash1 is a tuple, hash1[0] gives the hash and hash1[1] gives the nonce value
         print('The above should start with four zeroes')
         print()
-        genesis = standardBlock("Genesis", "Test", nonceValue, "TBI") # generate a genesis block when the list (chain) is created
+        genesis = standardBlock("Genesis", "Test", hash1[1], "TBI") # generate a genesis block when the list (chain) is created
         self.chainList = [] # initiate the list
         self.chainList.append(genesis) # add to the list. append adds to the end of the list. To modify at a certain index, use 'insert(index, object)'
     
@@ -52,12 +27,33 @@ class standardChain: # class defining the standard chain by creating a list of s
         for x in self.chainList:
             count +=1
             output +=("BLOCK {:}\n"
-                "Previous Hash: {:>10}\n"
-                "Data: {:>16}\n"
-                "Proof of Work: {:>8}\n"
-                "Correction Hash: {:>4}\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
-            return output
+                "Previous Hash:   {:}\n"
+                "Data:            {:}\n"
+                "Proof of Work:   {:}\n"
+                "Correction Hash: {:}\n\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
+        return output
 # will likely be left as null until correction chain is implemented
+
+    def ProofOfWork(self, previousHash, data, correctionHash): # generates hash and provides nonce value
+        nonceValue = -1 # ensures nonce counting will start at 0
+        hash1 = ''
+        # find nonce value and generate block along with its hash
+        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+            nonceValue = nonceValue + 1
+            newBlock = json.dumps({
+    
+                'Previous Hash': previousHash,
+                'Data': data,
+                'Proof of Work': nonceValue,
+                'Correction Hash': correctionHash
+    
+            }, sort_keys=True, indent=4, separators=(',', ': '))
+            hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+            if nonceValue >= 1000000000: # one billion is the limit for nonce searching
+                break
+
+        return hash1, nonceValue # returns the completed hash along with the nonce value found as a tuple
+            
 
     def addToChain(self, standardBlock): # add a block to the chain, assuming the block has already been made
         self.chainList.append(standardBlock)
@@ -66,37 +62,56 @@ class standardChain: # class defining the standard chain by creating a list of s
     def createStandardBlock(self, data): # create a block by hashing the previous block and finding the proof of work nonce value
         # hash previous block
         previousBlockIndex = len(self.chainList) - 1
-        # hash the data to be hashed with the block
-        hashedData = hashlib.sha256(self.chainList[previousBlockIndex].data.encode('utf-8')).hexdigest()
-        
-        # In order to hash the block, must convert to json
-        nonceValue = 0
-        newBlock = json.dumps({
-    
-                'Previous Hash ': self.chainList[previousBlockIndex].previousHash,
-                'Data': hashedData,
-                'Proof of Work': nonceValue,
-                'Correction Hash': self.chainList[previousBlockIndex].correctionHash
-    
-                }, sort_keys=True, indent=4, separators=(',', ': '))
-        hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+        # get the hash of the previous block in the chain
+        hashOfPrevious = self.ProofOfWork(self.chainList[previousBlockIndex].previousHash, self.chainList[previousBlockIndex].data, self.chainList[previousBlockIndex].correctionHash)
+        # create standardBlock object
+        newBlock = standardBlock(hashOfPrevious[0], data, hashOfPrevious[1], self.chainList[previousBlockIndex].correctionHash)
+        print(self.chainList[previousBlockIndex].previousHash)
+        # add block to the list
+        self.chainList.append(newBlock)
+        for x in self.chainList:
+            print(x.data)
+        print('Hash of previous block: ' + hashOfPrevious[0]) #debugging shenanigans
+        print()
+        return
 
-        # find nonce value and generate block along with its hash
-        while not str(hashOfPrevious).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
-            nonceValue = nonceValue + 1
+    def validateChain(self): # ensure the chain list is valid by comparing the hash of the previous block to the stored previous hash
+
+        # first verify the chain starts with the genesis block
+        if self.chainList[0].previousHash == 'Genesis':
+            print('Genesis found')
+        else:
+            print('Error validating block: Genesis block not found')
+            return 0 # validation fails
+
+        count = -1 # keep track of iterations through loop     
+        for x in self.chainList:
+            count += 1
+            if count == 0:
+                continue # skip genesis block
+                
+            # get previous hash stored in current block
+            previous_hash_stored_in_current_block = x.previousHash
+            print(previous_hash_stored_in_current_block)
+
+            # hash the previous block
             newBlock = json.dumps({
     
-                'Previous Hash ': self.chainList[previousBlockIndex].previousHash,
-                'Data': hashedData,
-                'Proof of Work': nonceValue,
-                'Correction Hash': self.chainList[previousBlockIndex].correctionHash
+                'Previous Hash': self.chainList[count-1].previousHash,
+                'Data': self.chainList[count-1].data,
+                'Proof of Work': self.chainList[count-1].proofOfWork,
+                'Correction Hash': self.chainList[count-1].correctionHash
     
             }, sort_keys=True, indent=4, separators=(',', ': '))
-            hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
-            if nonceValue >= 1000000000: # one billion is the limit for nonce searching
-                break
+            rehash_previous_block = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+            print(rehash_previous_block)
             
-        print('Hashed data: ' + str(hashedData))
-        print('Hash of previous block: ' + hashOfPrevious) #debugging shenanigans
-        print('This looks different from the genesis hash as we have hashed the Data field')
-        return
+            if previous_hash_stored_in_current_block == rehash_previous_block:
+                print('Successfully validated block ' + str(count+1))
+            else:
+                print('Error validating block ' + str(count+1))
+                return 0
+
+            
+            
+            
