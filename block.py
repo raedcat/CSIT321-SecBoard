@@ -43,7 +43,7 @@ class standardChain: # class defining the standard chain by creating a list of s
             newBlock = json.dumps({
     
                 'Previous Hash': previousHash,
-                'Data': data,
+                'Data': hashlib.sha256(data.encode('utf-8')).hexdigest(), # hash data according to paper G(xs)
                 'Proof of Work': nonceValue,
                 'Correction Hash': correctionHash
     
@@ -98,7 +98,7 @@ class standardChain: # class defining the standard chain by creating a list of s
             newBlock = json.dumps({
     
                 'Previous Hash': self.chainList[count-1].previousHash,
-                'Data': self.chainList[count-1].data,
+                'Data': hashlib.sha256((self.chainList[count-1].data).encode('utf-8')).hexdigest(),
                 'Proof of Work': self.chainList[count-1].proofOfWork,
                 'Correction Hash': self.chainList[count-1].correctionHash
     
