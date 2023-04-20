@@ -51,7 +51,6 @@ class standardChain: # class defining the standard chain by creating a list of s
             hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
             if nonceValue >= 1000000000: # one billion is the limit for nonce searching
                 break
-
         return hash1, nonceValue # returns the completed hash along with the nonce value found as a tuple
             
 
@@ -64,22 +63,19 @@ class standardChain: # class defining the standard chain by creating a list of s
         previousBlockIndex = len(self.chainList) - 1
         # get the hash of the previous block in the chain
         hashOfPrevious = self.ProofOfWork(self.chainList[previousBlockIndex].previousHash, self.chainList[previousBlockIndex].data, self.chainList[previousBlockIndex].correctionHash)
+        # find nonce of new block
+        newNonce = self.ProofOfWork(hashOfPrevious[0], data, self.chainList[previousBlockIndex].correctionHash)
         # create standardBlock object
-        newBlock = standardBlock(hashOfPrevious[0], data, hashOfPrevious[1], self.chainList[previousBlockIndex].correctionHash)
-        print(self.chainList[previousBlockIndex].previousHash)
+        newBlock = standardBlock(hashOfPrevious[0], data, newNonce[1], self.chainList[previousBlockIndex].correctionHash)
         # add block to the list
         self.chainList.append(newBlock)
-        for x in self.chainList:
-            print(x.data)
-        print('Hash of previous block: ' + hashOfPrevious[0]) #debugging shenanigans
-        print()
         return
 
     def validateChain(self): # ensure the chain list is valid by comparing the hash of the previous block to the stored previous hash
 
         # first verify the chain starts with the genesis block
         if self.chainList[0].previousHash == 'Genesis':
-            print('Genesis found')
+            print('Genesis found, which is block 1')
         else:
             print('Error validating block: Genesis block not found')
             return 0 # validation fails
