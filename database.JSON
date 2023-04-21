@@ -2,15 +2,9 @@
     "MainChain": [
         {
             "Previous Hash": "Genesis",
-            "Data": "",
+            "Data": "SecBoard",
             "Proof of Work": 0,
             "Correction Hash": ""
-        },
-        {
-            "Previous Hash": "Gen",
-            "Data": "10",
-            "Proof of Work": 5,
-            "Correction Hash": "50"
         }
     ],
     "CorrectionChain": []

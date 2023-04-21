@@ -27,7 +27,7 @@ class standardChain: # class defining the standard chain by creating a list of s
                 "Proof of Work: {:>10}\n"
                 "Correction Hash: {:>10}\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
             return output
-# will likely be left as null until correction chain is implemented
+        
 
     def addToChain(self, standardBlock): # add a block to the chain, assuming the block has already been made
         self.chainList.append(standardBlock)
