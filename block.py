@@ -26,6 +26,7 @@ class standardChain: # class defining the standard chain by creating a list of s
         count = 0
         for x in self.chainList:
             count +=1
+
             output +=("BLOCK {:}\n"
                 "Previous Hash:   {:}\n"
                 "Data:            {:}\n"

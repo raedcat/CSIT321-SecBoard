@@ -6,7 +6,6 @@ if __name__ == "__main__": # apparently this is cool
     testMessage = "Hello world!"
     testMessage2 = "another message"
 
-    #readDatabase()
     #Function testing shenanigans
     testChain = standardChain()
     print(testChain)
