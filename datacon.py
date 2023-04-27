@@ -1,6 +1,6 @@
 import json
 
-def readDatabase():
+def readChain():
     with open('database.json', 'r', encoding='utf-8') as database:
         data = json.load(database)
         return data
@@ -12,10 +12,19 @@ def writeBlock(block):
         database.seek(0)
         json.dump(data, database, indent=4)
 
-def WriteChain(chain):
-    with open('database.json', 'w', encoding='utf-8') as database:
-        json.dump(chain, database, indent=4)
+def WriteMainChain(chain):
+    
+    x = 1
+    for i in chain.chainList:
+        print(x)
+        x +=1
+        print(i)
+        
+    
+    #j = json.dumps(data, indent=4)
+    
+    #print(j)
 
 
-def writeCorrDatabase(block):
+def writeCorrChain(block):
     print("write correction chain database")
