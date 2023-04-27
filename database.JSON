@@ -1,6 +1,11 @@
-{"MainChain":[
-    {"Previous Hash":"Genesis", "Data":"", "Proof of Work": 0,"Correction Hash":""}
-],
-"CorrectionChain":[
-    
-]}
+{
+    "MainChain": [
+        {
+            "Previous Hash": "Genesis",
+            "Data": "SecBoard",
+            "Proof of Work": 0,
+            "Correction Hash": ""
+        }
+    ],
+    "CorrectionChain": []
+}
