@@ -1,19 +1,30 @@
 from block import *
-from datacon import *
+#from datacon import *
 
 
 if __name__ == "__main__": # apparently this is cool
-    testMessage = "Hello world!"
-    
-    x = {"Previous Hash":"Gen", "Data":"10", "Proof of Work": 5,"Correction Hash":"50"}
 
     #Function testing shenanigans
     testChain = standardChain()
+    testChain.createStandardBlock("Hello world!")
+    testChain.createStandardBlock("another message")
+    testChain.createStandardBlock('test 3')
+    testChain.createStandardBlock('test 4')
     print(testChain)
+    testChain.validateChain()
+    
 
-    block = testChain.createStandardBlock(testMessage)
-    testChain.addToChain(block)
+    #Election
+    testElectionHash = 'test election'
 
-    WriteMainChain(testChain)
+    #Correction Chain
+    testChain.createCorrectionBlock('New message!', testElectionHash, 2)
+    testChain.createCorrectionBlock('New message 2!', testElectionHash, 5)
+    testChain.printCorrectionList()
+
+    #Print chain after corrections
+    print("========================")
+    print("NEW BLOCKCHAIN")
+    print("========================")
+    testChain.printTrueList()
 ##################
-
