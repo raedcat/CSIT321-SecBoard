@@ -28,4 +28,3 @@ if __name__ == "__main__": # apparently this is cool
     print("========================")
     testChain.printTrueList()
 ##################
-
