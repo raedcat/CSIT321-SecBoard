@@ -1,5 +1,6 @@
 from block import *
-#from datacon import *
+from datacon import *
+import os
 
 
 if __name__ == "__main__": # apparently this is cool
@@ -13,7 +14,6 @@ if __name__ == "__main__": # apparently this is cool
     print(testChain)
     testChain.validateChain()
     
-
     #Election
     testElectionHash = 'test election'
 
@@ -27,5 +27,7 @@ if __name__ == "__main__": # apparently this is cool
     print("NEW BLOCKCHAIN")
     print("========================")
     testChain.printTrueList()
+    
+    #Write changes to the database (this should be put after every block is created probably)
+    WriteMainChain(testChain)
 ##################
-
