@@ -20,5 +20,23 @@
             "Correction hash": "Correction"
         },
         null
+    ],
+    "Correction chain": [
+        {
+            "Previous hash": "00002640efe065c4cde421cffa2c67b8f8716e31720f9c341b8841f12713b6fd",
+            "Data": "New message!",
+            "Proof of work": 3739,
+            "Election hash": "Election Hash TBI",
+            "Standard head hash": "00003fb948b3dc9be75eedf8505be01e844571e99f8683cefd0ce98a5cb513f8",
+            "Successor hash": "Successor Hash TBI"
+        },
+        {
+            "Previous hash": "000040b2c983d4c1aee6eaac9c61ea2008612856ab4754dc906e1b2977e90d8a",
+            "Data": "New message 2!",
+            "Proof of work": 139413,
+            "Election hash": "Election Hash TBI",
+            "Standard head hash": "00003fb948b3dc9be75eedf8505be01e844571e99f8683cefd0ce98a5cb513f8",
+            "Successor hash": "Successor Hash TBI"
+        }
     ]
 }
