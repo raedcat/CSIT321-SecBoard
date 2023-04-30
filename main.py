@@ -1,5 +1,5 @@
 from block import *
-#from datacon import *
+from datacon import *
 
 
 if __name__ == "__main__": # apparently this is cool
@@ -27,4 +27,6 @@ if __name__ == "__main__": # apparently this is cool
     print("NEW BLOCKCHAIN")
     print("========================")
     testChain.printTrueList()
+    
+    WriteMainChain(testChain)
 ##################

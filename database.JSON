@@ -1,11 +1,24 @@
 {
-    "MainChain": [
+    "Main chain": [
         {
             "Previous Hash": "Genesis",
-            "Data": "SecBoard",
-            "Proof of Work": 0,
-            "Correction Hash": ""
-        }
-    ],
-    "CorrectionChain": []
+            "Data": "Test",
+            "Proof of work": 3563,
+            "Correction hash": "Correction"
+        },
+        null,
+        {
+            "Previous Hash": "000047e9f90e3f7dd7b2bc603dd7a2e77078a9f1b419af339d7c3ab35ed84257",
+            "Data": "another message",
+            "Proof of work": 41802,
+            "Correction hash": "Correction"
+        },
+        {
+            "Previous Hash": "0000c295a1c8d134075dc8bb57cd8362e63bd5cfab43149bfbe5a59e6948c0f6",
+            "Data": "test 3",
+            "Proof of work": 42938,
+            "Correction hash": "Correction"
+        },
+        null
+    ]
 }

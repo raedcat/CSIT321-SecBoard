@@ -1,29 +1,28 @@
 import json
+from block import standardBlock, correctionBlock
 
 def readChain():
     with open('database.json', 'r', encoding='utf-8') as database:
         data = json.load(database)
         return data
 
-def writeBlock(block):
-    with open('database.json', 'r+', encoding='utf-8') as database:
-        data = json.load(database)
-        data["MainChain"].append(block)
-        database.seek(0)
-        json.dump(data, database, indent=4)
 
 def WriteMainChain(chain):
-    
-    x = 1
+    blocks = []
     for i in chain.chainList:
-        print(x)
-        x +=1
-        print(i)
+        if not i:
+            print("block doesnt exist")
+            blocks.append(None)
+        else:
+            block = {"Previous Hash":i.previousHash, "Data": i.data, "Proof of work": i.proofOfWork, "Correction hash": i.correctionHash}
+            print(block)
+            blocks.append(block)
+            
+    jsonchain = json.dumps({"Main chain":blocks}, indent=4)
+    with open("database.JSON", 'w', encoding='utf-8') as data:
+        data.write(jsonchain)
         
     
-    #j = json.dumps(data, indent=4)
-    
-    #print(j)
 
 
 def writeCorrChain(block):
