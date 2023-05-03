@@ -1,6 +1,7 @@
 import hashlib # sha256 shenanigans
 import json
 
+difficulty = "00"
 
 class standardBlock: # class to define the standard block, with properties taken from the correctable chain paper
     def __init__(self, previousHash, data, proofOfWork, correctionHash):
@@ -88,7 +89,7 @@ class standardChain: # class defining the standard chain by creating a list of s
         nonceValue = -1 # ensures nonce counting will start at 0
         hash1 = ''
         # find nonce value and generate block along with its hash
-        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+        while not str(hash1).startswith(difficulty): # four zeroes currently chosen as arbitrary difficulty
             nonceValue = nonceValue + 1
             newBlock = json.dumps({
     
@@ -107,7 +108,7 @@ class standardChain: # class defining the standard chain by creating a list of s
         nonceValue = -1 # ensures nonce counting will start at 0
         hash1 = ''
         # find nonce value and generate block along with its hash
-        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+        while not str(hash1).startswith(difficulty): # four zeroes currently chosen as arbitrary difficulty
             nonceValue = nonceValue + 1
             newBlock = json.dumps({
     
