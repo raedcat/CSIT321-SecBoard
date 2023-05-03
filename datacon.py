@@ -1,6 +1,7 @@
 import json
 import block
 
+#test
 #reads the chain from the database
 def readChain():
     with open('database.json', 'r', encoding='utf-8') as database:
