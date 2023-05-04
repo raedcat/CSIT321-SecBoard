@@ -15,7 +15,17 @@ if __name__ == "__main__": # apparently this is cool
     testChain.validateChain()
     
     #Election
+    print("========================")
+    print("ELECTION TESTING")
     testElectionHash = 'test election'
+    print("========================")
+    testChain.startElection()
+    print("========================")
+    testChain.createElection('corrected message', 2)
+    print("========================")
+    testChain.startElection()
+    print("========================")
+    # note to self: a correction block cannot be created until the election succeeds
 
     #Correction Chain
     testChain.createCorrectionBlock('New message!', testElectionHash, 2)
