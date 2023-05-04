@@ -1,6 +1,8 @@
 import hashlib # sha256 shenanigans
 import json
 
+difficulty = "00" # difficulty for proof of work, change here for debugging purposes
+
 
 class standardBlock: # class to define the standard block, with properties taken from the correctable chain paper
     def __init__(self, previousHash, data, proofOfWork, correctionHash):
@@ -21,10 +23,9 @@ class correctionBlock: # class to define the standard block, with properties tak
 class standardChain: # class defining the standard chain by creating a list of standardBlock objects
 
     def __init__(self):
-        hash1 = self.ProofOfWork('Genesis', 'Test', 'Correction')
+        hash1 = self.ProofOfWorkGenesis('Genesis', 'Test', 'Correction')
 
         print('Hash of Genesis: ' + str(hash1[0])) # hash1 is a tuple, hash1[0] gives the hash and hash1[1] gives the nonce value
-        print('The above should start with four zeroes')
         print()
         genesis = standardBlock("Genesis", "Test", hash1[1], "Correction") # generate a genesis block when the list (chain) is created
         self.chainList = [] # initiate the list
@@ -84,11 +85,11 @@ class standardChain: # class defining the standard chain by creating a list of s
                     "Correction Hash: {:}\n\n").format(count, x.previousHash, x.data, x.proofOfWork, x.correctionHash)
         print(output)                
 
-    def ProofOfWork(self, previousHash, data, correctionHash): # generates hash and provides nonce value
+    def ProofOfWorkGenesis(self, previousHash, data, correctionHash): # generates hash and provides nonce value for initialising genesis block
         nonceValue = -1 # ensures nonce counting will start at 0
         hash1 = ''
         # find nonce value and generate block along with its hash
-        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+        while not str(hash1).startswith(difficulty): # four zeroes currently chosen as arbitrary difficulty
             nonceValue = nonceValue + 1
             newBlock = json.dumps({
     
@@ -101,13 +102,32 @@ class standardChain: # class defining the standard chain by creating a list of s
             hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
             if nonceValue >= 1000000000: # one billion is the limit for nonce searching
                 break
-        return hash1, nonceValue # returns the completed hash along with the nonce value found as a tuple
+        return hash1, nonceValue
 
-    def ProofOfWorkCorrection(self, previousHash, data, electionHash, successorHash, headHash): # generates hash and provides nonce value
+    def ProofOfWork(self, previousHash, data, correctionHash): # generates nonce value for standard chain
         nonceValue = -1 # ensures nonce counting will start at 0
         hash1 = ''
         # find nonce value and generate block along with its hash
-        while not str(hash1).startswith("0000"): # four zeroes currently chosen as arbitrary difficulty
+        while not str(hash1).startswith(difficulty): # four zeroes currently chosen as arbitrary difficulty
+            nonceValue = nonceValue + 1
+            newBlock = json.dumps({
+    
+                'Previous Hash': previousHash,
+                'Data': hashlib.sha256(data.encode('utf-8')).hexdigest(), # hash data according to paper G(xs)
+                'Proof of Work': nonceValue,
+                'Correction Hash': correctionHash
+    
+            }, sort_keys=True, indent=4, separators=(',', ': '))
+            hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+            if nonceValue >= 1000000000: # one billion is the limit for nonce searching
+                break
+        return nonceValue 
+
+    def ProofOfWorkCorrection(self, previousHash, data, electionHash, successorHash, headHash): # generates nonce value for correction chain
+        nonceValue = -1 # ensures nonce counting will start at 0
+        hash1 = ''
+        # find nonce value and generate block along with its hash
+        while not str(hash1).startswith(difficulty): # four zeroes currently chosen as arbitrary difficulty
             nonceValue = nonceValue + 1
             newBlock = json.dumps({
     
@@ -122,7 +142,7 @@ class standardChain: # class defining the standard chain by creating a list of s
             hash1 = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
             if nonceValue >= 1000000000: # one billion is the limit for nonce searching
                 break
-        return hash1, nonceValue # returns the completed hash along with the nonce value found as a tuple
+        return nonceValue 
             
         
 
@@ -130,11 +150,23 @@ class standardChain: # class defining the standard chain by creating a list of s
         # get previous block index
         previousBlockIndex = len(self.chainList) - 1
         # get the hash of the previous block in the chain
-        hashOfPrevious = self.ProofOfWork(self.chainList[previousBlockIndex].previousHash, self.chainList[previousBlockIndex].data, self.chainList[previousBlockIndex].correctionHash)
+        # this is stupid and inefficient
+        # hashOfPrevious = self.ProofOfWork(self.chainList[previousBlockIndex].previousHash, self.chainList[previousBlockIndex].data, self.chainList[previousBlockIndex].correctionHash)
+        
+        newBlock = json.dumps({
+    
+            'Previous Hash': self.chainList[previousBlockIndex].previousHash,
+            'Data': hashlib.sha256((self.chainList[previousBlockIndex].data).encode('utf-8')).hexdigest(),
+            'Proof of Work': self.chainList[previousBlockIndex].proofOfWork,
+            'Correction Hash': self.chainList[previousBlockIndex].correctionHash
+    
+        }, sort_keys=True, indent=4, separators=(',', ': '))
+        hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+        
         # find nonce of new block
-        newNonce = self.ProofOfWork(hashOfPrevious[0], data, self.chainList[previousBlockIndex].correctionHash)
+        newNonce = self.ProofOfWork(hashOfPrevious, data, self.chainList[previousBlockIndex].correctionHash)
         # create standardBlock object
-        newBlock = standardBlock(hashOfPrevious[0], data, newNonce[1], self.chainList[previousBlockIndex].correctionHash)
+        newBlock = standardBlock(hashOfPrevious, data, newNonce, self.chainList[previousBlockIndex].correctionHash)
         # add block to the list
         self.chainList.append(newBlock)
         return
@@ -167,12 +199,11 @@ class standardChain: # class defining the standard chain by creating a list of s
             }, sort_keys=True, indent=4, separators=(',', ': '))
             headHash = hashlib.sha256(headBlock.encode('utf-8')).hexdigest()
 
-
             # find nonce of new block
             newNonce = self.ProofOfWorkCorrection(hashOfPrevious, data, 'Election Hash TBI', 'Successor Hash TBI', headHash)
 
             # create correctionBlock object
-            newBlock = correctionBlock(hashOfPrevious, data, newNonce[1], 'Election Hash TBI', 'Successor Hash TBI', headHash)
+            newBlock = correctionBlock(hashOfPrevious, data, newNonce, 'Election Hash TBI', 'Successor Hash TBI', headHash)
 
             # add the block to the correction list
             self.correctionList.append(newBlock)
@@ -219,7 +250,7 @@ class standardChain: # class defining the standard chain by creating a list of s
         newNonce = self.ProofOfWorkCorrection(hashOfPrevious, data, 'Election Hash', 'Successor Hash', 'Head Hash')
 
         # create correctionBlock object
-        newBlock = correctionBlock(hashOfPrevious, data, newNonce[1], 'Election Hash TBI', 'Successor Hash TBI', headHash)
+        newBlock = correctionBlock(hashOfPrevious, data, newNonce, 'Election Hash TBI', 'Successor Hash TBI', headHash)
 
         # add the block to the correction list
         self.correctionList.append(newBlock)

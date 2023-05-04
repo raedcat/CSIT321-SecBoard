@@ -29,5 +29,5 @@ if __name__ == "__main__": # apparently this is cool
     testChain.printTrueList()
     
     #Write changes to the database (this should be put after every block is created probably)
-    WriteMainChain(testChain)
+    #WriteMainChain(testChain)
 ##################
