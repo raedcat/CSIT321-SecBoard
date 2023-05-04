@@ -22,6 +22,8 @@ if __name__ == "__main__": # apparently this is cool
     testChain.createCorrectionBlock('New message 2!', testElectionHash, 5)
     testChain.printCorrectionList()
 
+    testChain.createStandardBlock('test 5')
+    
     #Print chain after corrections
     print("========================")
     print("NEW BLOCKCHAIN")

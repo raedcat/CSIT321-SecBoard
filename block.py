@@ -20,6 +20,14 @@ class correctionBlock: # class to define the standard block, with properties tak
         self.successorHash = successorHash # hash of successor of the block to be corrected BSi, i.e. H(BSi+1)
         self.standardHeadHash = standardHeadHash # hash value of the head of the standard chain
 
+class election: # class to define an election, as a list of unfinished elections is required
+    def __init__(self, previousHash, data, newData, proofOfWork, correctionHash):
+        self.previousHash = previousHash
+        self.data = data 
+        self.newData = newData # data proposed to replace the existing data
+        self.proofOfWork = proofOfWork 
+        self.correctionHash = correctionHash 
+
 class standardChain: # class defining the standard chain by creating a list of standardBlock objects
 
     def __init__(self):
@@ -34,7 +42,10 @@ class standardChain: # class defining the standard chain by creating a list of s
         # create correction chain
         self.correctionList = []
         # for correctionChain, refer to first object in chainList, as the genesis is shared between both and the correctionList needs to consist of correctionBlock objects
-    
+
+        # create list of elections
+        self.electionList = []
+        
     def __str__(self): # print method
         output = ""
         count = 0
@@ -152,21 +163,47 @@ class standardChain: # class defining the standard chain by creating a list of s
         # get the hash of the previous block in the chain
         # this is stupid and inefficient
         # hashOfPrevious = self.ProofOfWork(self.chainList[previousBlockIndex].previousHash, self.chainList[previousBlockIndex].data, self.chainList[previousBlockIndex].correctionHash)
-        
-        newBlock = json.dumps({
     
-            'Previous Hash': self.chainList[previousBlockIndex].previousHash,
-            'Data': hashlib.sha256((self.chainList[previousBlockIndex].data).encode('utf-8')).hexdigest(),
-            'Proof of Work': self.chainList[previousBlockIndex].proofOfWork,
-            'Correction Hash': self.chainList[previousBlockIndex].correctionHash
+        # if the previous block has been corrected, then there will be no previous hash, as the correction hash will be used for validation
+        if self.chainList[previousBlockIndex] == '':
+            hashOfPrevious = 'CORRECTED'
+            
+            # get hash of the correction block
+            previousBlockIndex = len(self.correctionList) - 1
+            correctionBlock = json.dumps({
     
-        }, sort_keys=True, indent=4, separators=(',', ': '))
-        hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
+                'Previous Hash': self.correctionList[previousBlockIndex].previousHash,
+                'Data': hashlib.sha256((self.correctionList[previousBlockIndex].data).encode('utf-8')).hexdigest(),
+                'Proof of Work': self.correctionList[previousBlockIndex].proofOfWork,
+                'Election Hash': self.correctionList[previousBlockIndex].electionHash,
+                'Successor Hash': self.correctionList[previousBlockIndex].successorHash,
+                'Standard Head Hash': self.correctionList[previousBlockIndex].standardHeadHash
+    
+            }, sort_keys=True, indent=4, separators=(',', ': '))
+            correctionHash = hashlib.sha256(correctionBlock.encode('utf-8')).hexdigest()
+
+            #find nonce of new block
+            newNonce = self.ProofOfWork(hashOfPrevious, data, correctionHash)
+
+            # create standardBlock object
+            newBlock = standardBlock(hashOfPrevious, data, newNonce, correctionHash)
+            
+        else:
+            newBlock = json.dumps({
+    
+                'Previous Hash': self.chainList[previousBlockIndex].previousHash,
+                'Data': hashlib.sha256((self.chainList[previousBlockIndex].data).encode('utf-8')).hexdigest(),
+                'Proof of Work': self.chainList[previousBlockIndex].proofOfWork,
+                'Correction Hash': self.chainList[previousBlockIndex].correctionHash
+    
+            }, sort_keys=True, indent=4, separators=(',', ': '))
+            hashOfPrevious = hashlib.sha256(newBlock.encode('utf-8')).hexdigest()
         
-        # find nonce of new block
-        newNonce = self.ProofOfWork(hashOfPrevious, data, self.chainList[previousBlockIndex].correctionHash)
-        # create standardBlock object
-        newBlock = standardBlock(hashOfPrevious, data, newNonce, self.chainList[previousBlockIndex].correctionHash)
+            # find nonce of new block
+            newNonce = self.ProofOfWork(hashOfPrevious, data, self.chainList[previousBlockIndex].correctionHash)
+
+            # create standardBlock object
+            newBlock = standardBlock(hashOfPrevious, data, newNonce, self.chainList[previousBlockIndex].correctionHash)
         # add block to the list
         self.chainList.append(newBlock)
         return
@@ -309,6 +346,32 @@ class standardChain: # class defining the standard chain by creating a list of s
         else:
             return 1
 
-            
+
+    def createElection(self, newData, blockNumber):
+        # newData is the data proposed to replace the existing block, currently assumed to be a string
+        # blockIndex is the number of the block in the chain that is being proposed to be replaced
+        # it is assumed this data is sent from the front end
+        # get data for election
+        previousHash = self.chainList[blockNumber-1].previousHash
+        data = hashlib.sha256((self.chainList[blockNumber-1].data).encode('utf-8')).hexdigest()
+        proofOfWork = self.chainList[blockNumber-1].proofOfWork
+        correctionHash = self.chainList[blockNumber-1].correctionHash
+        newElection = election(previousHash, data, newData, proofOfWork, correctionHash)
+
+        """ multiline comment apparently
+        # this is useful for later #
+        election = json.dumps({
+    
+                'Previous Hash': self.chainList[blockNumber-1].previousHash,
+                'Data': hashlib.sha256((self.chainList[blockNumber-1].data).encode('utf-8')).hexdigest(),
+                'Proposed New Data': newData
+                'Proof of Work': self.chainList[blockNumber-1].proofOfWork,
+                'Correction Hash': self.chainList[blockNumber-1].correctionHash
+    
+        }, sort_keys=True, indent=4, separators=(',', ': '))
+        """
+        
+        # add to list
+        self.electionList.append(newElection)
             
             
