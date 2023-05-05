@@ -5,7 +5,6 @@ import os
 
 if __name__ == "__main__": # apparently this is cool
     
-    test()
 
     #Function testing shenanigans
     testChain = standardChain()
@@ -30,14 +29,15 @@ if __name__ == "__main__": # apparently this is cool
     print("========================")
     testChain.printTrueList()
     
+    readMainBlock()
     #Write changes to the database (this should be put after every block is created probably)
-    WriteMainChain(testChain)
+    #WriteMainChain(testChain)
 
     #read from the Json database
-    data = readChain()
+    #data = readChain()
 
     #print out specific variables from specific chains(prints the data variable from the main chain)
-    for i in data["Main chain"]:
-        if i != None:
-            print(i["Data"])
+    #for i in data["Main chain"]:
+    #    if i != None:
+    #        print(i["Data"])
 ##################

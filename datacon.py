@@ -2,8 +2,8 @@ import json
 import block
 import mysql.connector
 
-def test():
-    mydb = mysql.connector.connect(
+def databaseConnection():
+    return mysql.connector.connect(
         host="103.43.75.136",
         user="secboard",
         password="secboardmysql",
@@ -12,16 +12,33 @@ def test():
         charset="utf8mb4"
     )
 
+def writeMainBlock():
+    #uses the databaseConnection function to establish a connection to the database
+    mydb = databaseConnection()
     mycursor = mydb.cursor()
 
-    mycursor.execute("SELECT * from posts")
+    #creates the MYSQL statement to write the data of the block into the chain
+    sql = "INSERT INTO MainChain(PreviousHash, BlockData, ProofofWork, CorrectionHash) Values(%s, %s, %s, %s)"
+    values = ()
+    
+    #executes and commits the insertion of the data
+    mycursor.execute(sql, values)
+    mydb.commit()
 
-    myresult = mycursor.fetchall()
+def readMainBlock():
+    mydb = databaseConnection()
+    mycursor = mydb.cursor()
 
-    for x in myresult:
-        print(x)
+    sql = "SELECT * FROM MainChain"
+    mycursor.execute(sql)
 
-#test
+    data = mycursor.fetchall()
+
+    for i in data:
+        print(i)
+
+########################################### JSON DATABASE READ WRITE###############################################
+###########################################         OBSOLETE       ################################################
 #reads the chain from the database
 def readChain():
     with open('database.json', 'r', encoding='utf-8') as database:
