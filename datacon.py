@@ -1,5 +1,25 @@
 import json
 import block
+import mysql.connector
+
+def test():
+    mydb = mysql.connector.connect(
+        host="103.43.75.136",
+        user="secboard",
+        password="secboardmysql",
+        port="3306",
+        database="321DB",
+        charset="utf8mb4"
+    )
+
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * from posts")
+
+    myresult = mycursor.fetchall()
+
+    for x in myresult:
+        print(x)
 
 #test
 #reads the chain from the database

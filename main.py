@@ -4,6 +4,8 @@ import os
 
 
 if __name__ == "__main__": # apparently this is cool
+    
+    test()
 
     #Function testing shenanigans
     testChain = standardChain()
