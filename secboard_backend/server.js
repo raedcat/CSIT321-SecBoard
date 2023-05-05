@@ -80,7 +80,7 @@ const mySqlConnection = mysql.createConnection({
 // 	charset: "utf8mb4",
 // });
 setInterval(() => {
-	const preventErro = "select * from user_client";
+	const preventErro = "select * from users_info";
 	mySqlConnection.query(preventErro);
 }, 3600000);
 
