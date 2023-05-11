@@ -436,12 +436,19 @@ class standardChain: # class defining the standard chain by creating a list of s
         
         # add to list
         self.electionList.append(newElection)
+        return newElection
         
-    def startElection(self):
-        if not self.electionList:
-            print("No elections to process.")
+    def processElection(self, electionToProcess):
+        check = 0
+        for i in self.electionList:
+            if electionToProcess == i:
+                check = 1
+                print("Election found")
+        if check == 0:
+            print("No elections found with that object.")
             return
-        print("Election/s found:")
+        
+        
         
         
             
