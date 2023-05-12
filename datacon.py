@@ -1,6 +1,7 @@
 import json
-import block
 import mysql.connector
+
+########################################### MYSQL DATABASE READ WRITE###############################################
 
 def databaseConnection():
     return mysql.connector.connect(
@@ -12,7 +13,8 @@ def databaseConnection():
         charset="utf8mb4"
     )
 
-def writeMainBlock():
+
+def writeMainBlock(block):
     #uses the databaseConnection function to establish a connection to the database
     mydb = databaseConnection()
     mycursor = mydb.cursor()
@@ -24,6 +26,7 @@ def writeMainBlock():
     #executes and commits the insertion of the data
     mycursor.execute(sql, values)
     mydb.commit()
+    mydb.close()
 
 def readMainBlock():
     mydb = databaseConnection()
@@ -37,8 +40,10 @@ def readMainBlock():
     for i in data:
         print(i)
 
+    mydb.close()
+
+    
 ########################################### JSON DATABASE READ WRITE###############################################
-###########################################         OBSOLETE       ################################################
 #reads the chain from the database
 def readChain():
     with open('database.json', 'r', encoding='utf-8') as database:
