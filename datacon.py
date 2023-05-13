@@ -28,6 +28,7 @@ def writeMainBlock(block):
     mydb.commit()
     mydb.close()
 
+
 def readMainBlock():
     mydb = databaseConnection()
     mycursor = mydb.cursor()
@@ -36,11 +37,8 @@ def readMainBlock():
     mycursor.execute(sql)
 
     data = mycursor.fetchall()
-
-    for i in data:
-        print(i)
-
     mydb.close()
+    return data
 
     
 ########################################### JSON DATABASE READ WRITE###############################################
