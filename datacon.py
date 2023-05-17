@@ -1,5 +1,6 @@
 import json
 import mysql.connector
+from block import *
 
 ########################################### MYSQL DATABASE READ WRITE###############################################
 
@@ -40,16 +41,58 @@ def readMainBlock():
     mydb.close()
     return data
 
+#to be called when new data is added to the database
+#when called it will read the database for the new post then send the data
+#to the block.py script to produce a new block, after it will use the
+# writeMainChain() method to write the chain to the JSON database
+def readNewBlock():
+    mydb = databaseConnection()
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * FROM posts ORDER BY timestamp DESC LIMIT 1")
+    data = mycursor.fetchall()
+    mydb.close()
+    print("newest post")
+    print(data)
+    
+    #call function to create block from this data
+
+    #call function to Read chain from JSON
+    oldChain = readChainJSON()
+    print("old chain")
+    print(oldChain)
+
+    #add new block to chain
+    test = standardChain()
+    test.createStandardBlock("testing 132")
+    block = test.chainList.pop()
+    print(block)
+
+    newChain = appendBlockToChainJSON(block, oldChain)
+
+    print("new chain")
+    print(newChain)
+
+    #save chain to JSON
+    #WriteMainChain(newChain)
+
     
 ########################################### JSON DATABASE READ WRITE###############################################
 #reads the chain from the database
-def readChain():
+def readChainJSON():
     with open('database.json', 'r', encoding='utf-8') as database:
         data = json.load(database)
         return data
 
+def appendBlockToChainJSON(newBlock, oldChain):
+    oldChain["Main chain"] += {"Previous Hash":newBlock.previousHash, "Data": newBlock.data, "Proof of work": newBlock.proofOfWork, "Correction hash": newBlock.correctionHash}
+    newChain = json.dumps(oldChain, indent=4)
+    return newChain
+    
+
+
 #writes the chains to the database
-def WriteMainChain(chain):
+def WriteMainChainJSON(chain):
     blocks = []
     cBlocks = []
     
@@ -79,3 +122,10 @@ def WriteMainChain(chain):
     #writes the data to the database
     with open("database.JSON", 'w', encoding='utf-8') as data:
         data.write(jsonchain)
+
+
+
+
+
+if __name__ == "__main__":
+    readNewBlock()
