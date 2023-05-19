@@ -43,4 +43,3 @@ if __name__ == "__main__": # apparently this is cool
     #WriteMainChain(testChain)
 
     testChain.validateChain()
-##################
