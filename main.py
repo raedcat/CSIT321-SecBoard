@@ -15,27 +15,31 @@ if __name__ == "__main__": # apparently this is cool
     testChain.validateChain()
     
     #Election
+    print()
+    print("========================")
+    print("ELECTION TESTING")
     testElectionHash = 'test election'
+    newElection = testChain.createElection('corrected message', 2)
+    print("========================")
+    testChain.processElection(newElection)
+    print("========================")
+    print()
+    # note to self: a correction block cannot be created until the election succeeds
 
     #Correction Chain
     testChain.createCorrectionBlock('New message!', testElectionHash, 2)
     testChain.createCorrectionBlock('New message 2!', testElectionHash, 5)
-    testChain.printCorrectionList()
+    #testChain.printCorrectionList()
 
+    testChain.createStandardBlock('test 5')
+    
     #Print chain after corrections
-    print("========================")
-    print("NEW BLOCKCHAIN")
-    print("========================")
-    testChain.printTrueList()
+    #print("========================")
+    #print("NEW BLOCKCHAIN")
+    #print("========================")
+    #testChain.printTrueList()
     
     #Write changes to the database (this should be put after every block is created probably)
-    WriteMainChain(testChain)
+    #WriteMainChain(testChain)
 
-    #read from the Json database
-    data = readChain()
-
-    #print out specific variables from specific chains(prints the data variable from the main chain)
-    for i in data["Main chain"]:
-        if i != None:
-            print(i["Data"])
-##################
+    testChain.validateChain()
